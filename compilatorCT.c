@@ -47,7 +47,7 @@ Token *lastToken = NULL; // Global variable to store last token
 int line = 1;            // Global variable to track current line number
 
 
-Token *addTk(int code){
+void addTk(int code){
     Token *tk;
     SAFEALLOC(tk,Token)
     tk->code=code;
@@ -55,11 +55,11 @@ Token *addTk(int code){
     tk->next=NULL;
     if(lastToken){
         lastToken->next=tk;
-    }else{
+     }else{
         tokens=tk;
-    }
-lastToken=tk;
-return tk;
+     }
+    lastToken=tk;
+    return tk;
 }
 
 void err(const char *fmt,...){
@@ -96,13 +96,15 @@ int getNextToken(const char *input){
                     input++; // consume the character
                     state=1; // set the new state
                 }
-
+                break;
             case 1 :
                 if(isalnum(ch)||ch=='_')
                     input++;
                 else 
                     state=2;
                 break;
+                
+
             case 2:
                 nCh=input-pStartCh; // the id length
                 // keywords tests
@@ -133,22 +135,25 @@ int getNextToken(const char *input){
             {
                 // if no keyword, then it is an ID
                 addTk(ID);
+                Token *tk = lastToken;
                 SAFEALLOC(tk->text, char);
                 tk->text = strndup(pStartCh, nCh);
+                input += nCh; 
+                break;
+                
             }
-            return lastToken->code;
+            
+           
         }
-         return tk->code;
+        
+ if (ch == '\0')
+            return END;
 
-
-        }
-
-
+    }
 }
 
 
-void printTokens(Token *tokens) 
-{
+void printTokens(Token *tokens){
     while (tokens != NULL) 
     {
         printf("Token: %d", tokens->code);
@@ -189,7 +194,14 @@ int main(int argc, char *argv[])
     int token;
     while ((token = getNextToken(input)) != END) 
     {
-        // Process tokens if needed
+        switch (token) 
+        {
+            case ID:
+                printf("Identifier: %s\n", lastToken->text);
+                break;
+            default:
+                printf("Token code: %d\n", token);
+        }
     }
 
     printTokens(tokens);
