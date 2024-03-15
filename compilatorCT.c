@@ -89,19 +89,27 @@ int getNextToken(const char *input){
     Token *tk;
     while(1){ // infinite loop
         ch= *input;
+        
         switch(state){
             case 0 :
-                if(isalpha(ch)||ch=='_'){
-                    pStartCh=input; // memorizes the beginning of the ID
-                    input++; // consume the character
-                    state=1; // set the new state
+                if (isalpha(ch) || ch == '_') {
+                    pStartCh = input;
+                    input++; // Memorize the beginning of the ID
+                    state = 1;    
+                    printf("%c1",ch);    // Set the new state
+                } else if (ch == '\0') {
+                    return END; // Reached the end of input
                 }
                 break;
             case 1 :
-                if(isalnum(ch)||ch=='_')
+                if(isalnum(ch)||ch=='_'){
                     input++;
-                else 
+                    printf("%c2",ch);
+                }
+                else {
+                    printf("%c3",ch);
                     state=2;
+                }
                 break;
                 
 
@@ -133,23 +141,29 @@ int getNextToken(const char *input){
                 
             else 
             {
+                printf("%c4",ch);
                 // if no keyword, then it is an ID
                 addTk(ID);
-                Token *tk = lastToken;
+               Token *tk = lastToken;
                 SAFEALLOC(tk->text, char);
                 tk->text = strndup(pStartCh, nCh);
-                input += nCh; 
-                break;
+               /// input += nCh; 
+                return ID;
                 
             }
+            if (state==2) 
+            break;
+             if (ch == '\n')
+            return END;
+            input++;
             
            
         }
         
- if (ch == '\0')
-            return END;
+
 
     }
+
 }
 
 
