@@ -141,28 +141,22 @@ int getNextToken(const char *input){
                 
             else 
             {
+               
                 printf("%c4",ch);
                 // if no keyword, then it is an ID
                 addTk(ID);
-               Token *tk = lastToken;
+                Token *tk = lastToken;
                 SAFEALLOC(tk->text, char);
                 tk->text = strndup(pStartCh, nCh);
-               /// input += nCh; 
+                input += nCh;
                 return ID;
+               
                 
-            }
-            if (state==2) 
-            break;
-             if (ch == '\n')
-            return END;
-            input++;
-            
+            }  
            
         }
-        
-
-
     }
+   
 
 }
 
@@ -206,7 +200,7 @@ int main(int argc, char *argv[])
     fclose(file);
 
     int token;
-    while ((token = getNextToken(input)) != END) 
+    while ((token = getNextToken(input))) 
     {
         switch (token) 
         {
