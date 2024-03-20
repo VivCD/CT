@@ -122,6 +122,12 @@ int getNextToken(const char *input){
                     input++; 
                     state=5;
                 }
+                else if(ch=='\''){
+                    pStartCh=input;
+                    input++;
+                    state=14;
+
+                }
                 else tkerr(addTk(END),"invalid character");
                 break;
             case 1 :
@@ -200,6 +206,10 @@ int getNextToken(const char *input){
                     input++;
                     state=6;
                 }
+                else if(ch=='.'){
+                    input++;
+                    state=8;
+                }
                 else if(ch=='e'||ch=='E'){
                     input++;
                     state=10;
@@ -233,6 +243,8 @@ int getNextToken(const char *input){
                     input++;
                     state=9;
                 }
+                else
+                  state=13;
             break;
 
             case 9:
@@ -268,11 +280,48 @@ int getNextToken(const char *input){
                 else 
                     state=13;
             break;
+
             case 13:
                 tk = addTk(CT_REAL);
                 tk->text = strndup(pStartCh, nCh);    
             return tk->code; 
 
+            case 14:
+                if(ch=='//'){
+                    input++;
+                    state=15;
+                }
+                else if(ch=='^'||ch=='\''||ch=='\\'){
+                    input++;
+                    state=18;
+                }
+            break;
+            
+            case 15:
+                if(ch=='a'||ch=='b'||ch=='f'||ch=='m'||ch=='n'||ch=='t'||ch=='v'||ch=='\''||ch=='?'||ch=='"'||ch=='\\'||ch=='0'){
+                    input++;
+                    state=16;
+                }
+            break;
+
+            case 16:
+                if(ch=='\''){
+                    input++;
+                    state=17;
+                }
+            break;
+
+            case 17:
+               tk = addTk(CT_CHAR);
+                tk->text = strndup(pStartCh, nCh);    
+            return tk->code;
+
+            case 18:
+                 if(ch=='\''){
+                    input++;
+                    state=17;
+                }
+            break;
 
 
                 
@@ -335,6 +384,9 @@ int main(int argc, char *argv[])
                 break;
             case CT_REAL:
                 printf("REAL number: %s\n", lastToken->text);
+                break;
+            case CT_CHAR:
+                printf("CHAR: %s\n", lastToken->text);
                 break;
 
             default:
